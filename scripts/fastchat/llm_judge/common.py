@@ -555,7 +555,7 @@ def chat_completion_vllm(model, conv, temperature, max_tokens):
         messages=messages,
         n=1,
         temperature=temperature,
-        max_tokens=max_tokens,
+        max_tokens=max_tokens + cfg.model.reasoning_token_len,
     )
     return response.choices[0].message.content
 

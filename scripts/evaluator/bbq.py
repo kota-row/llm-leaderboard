@@ -255,7 +255,7 @@ def evaluate_n_shot(few_shots: bool):
                 category_samples = [sample for sample in task_data["samples"] if sample["category"] == category]
                 selected_samples = category_samples[:num_samples]
 
-                llm.max_tokens = task_data["output_length"]
+                llm.max_tokens = task_data["output_length"] + cfg.model.reasoning_token_len
                 chain = prompts_dict[category] | llm
 
                 for idx, sample in tqdm(enumerate(selected_samples)):

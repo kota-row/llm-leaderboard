@@ -20,7 +20,7 @@ def load_questions(artifact_dir):
 def generate_answers(questions, llm):
     instance = WandbConfigSingleton.get_instance()
     cfg = instance.config
-    generator_config = {"max_tokens": 256}
+    generator_config = {"max_tokens": 256 + cfg.model.reasoning_token_len}
     inputs = [
         ([{"role": "user", "content": '以下の質問に対して50文字以内で回答してください。' + q["Question"][:50]}], generator_config)
         for q in questions

@@ -214,6 +214,9 @@ def start_vllm_server():
                     
             if cfg.model.trust_remote_code:
                 command.append("--trust-remote-code")
+            if cfg.model.get('reasoning_parser', None) is not None:
+                command.append("--enable-reasoning")
+                command.extend(["--reasoning-parser", cfg.model.reasoning_parser])
 
             print(command)
             process = subprocess.Popen(command)

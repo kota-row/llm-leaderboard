@@ -28,9 +28,11 @@ def load_questions(question_file: str, begin: Optional[int], end: Optional[int])
 
 
 def process_question(q, llm):
+    instance = WandbConfigSingleton.get_instance()
+    cfg = instance.config
     messages = [{"role": "user", "content": q["user_prompt"]}]
     max_tokens = 1024  # TODO 引数にする
-    inputs = [(messages, {"max_tokens": max_tokens})]
+    inputs = [(messages, {"max_tokens": max_tokens + cfg.model.reasoning_token_len})]
     llm_ap = LLMAsyncProcessor(llm=llm, inputs=inputs)
     results = llm_ap.get_results()
     ans =  results[0].content
@@ -157,7 +159,7 @@ def evaluate():
         questions = questions[:12]
 
     # Create model answers
-    generator_config = {"max_tokens": 1024}
+    generator_config = {"max_tokens": 1024 + cfg.model.reasoning_token_len}
     inputs = [
         ([{"role": "user", "content": q["user_prompt"]}], generator_config)
         for q in questions

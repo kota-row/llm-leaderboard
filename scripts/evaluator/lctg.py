@@ -90,7 +90,7 @@ def evaluate():
                 messages = []
                 messages.append({"role": "user", "content": sample})
                 prompt = apply_chat_template(messages=messages)
-                generator_config = {"max_tokens": 1500}
+                generator_config = {"max_tokens": 1500 + cfg.model.reasoning_token_len}
                 inputs.append([messages, generator_config])
                 prompt_table_data.append({
                     "question_id": master_df["prompt_id"][i],

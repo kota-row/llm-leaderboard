@@ -168,7 +168,7 @@ def evaluate_n_shot(few_shots: bool):
                 control_method: str = controllability_dict[control_task].__name__
                 control_func: callable = controllability_dict[control_task]
 
-                generator_config = {"max_tokens": task_data["output_length"]}
+                generator_config = {"max_tokens": task_data["output_length"] + cfg.model.reasoning_token_len}
                 inputs.extend([messages, generator_config])
 
                 # collect data
