@@ -557,7 +557,10 @@ def chat_completion_vllm(model, conv, temperature, max_tokens):
         temperature=temperature,
         max_tokens=max_tokens + cfg.model.reasoning_token_len,
     )
-    return response.choices[0].message.content
+    content = response.choices[0].message.content
+    if '</think>' in content:
+        content = content.split('</think>')[-1].lstrip()
+    return content
 
 
 from openai import AzureOpenAI

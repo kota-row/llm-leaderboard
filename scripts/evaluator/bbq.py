@@ -268,6 +268,8 @@ def evaluate_n_shot(few_shots: bool):
                     prompt = prompts_dict[category].format(**input_data)
 
                     # score
+                    if '</think>' in output.content:
+                        output.content = output.content.split('</think>')[-1].lstrip()
                     output_text = output.content if hasattr(output, 'content') else output
                     y_pred: str = pipe(
                         output_text,

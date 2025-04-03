@@ -61,6 +61,8 @@ class LLMAsyncProcessor:
             raise NotImplementedError(
                 "Synchronous invoke is only implemented for Google API"
             )
+        if '</think>' in response.content:
+            response.content = response.content.split('</think>')[-1].lstrip()
         return response
 
     @error_handler
@@ -68,12 +70,15 @@ class LLMAsyncProcessor:
     async def _ainvoke(self, messages: Messages, **kwargs) -> Tuple[AIMessage, float]:
         await asyncio.sleep(self.inference_interval)
         if self.api_type in ["google", "amazon_bedrock"]:
-            return await asyncio.to_thread(self._invoke, messages, **kwargs)
+            response = await asyncio.to_thread(self._invoke, messages, **kwargs)
         else:
             if self.model_name == "tokyotech-llm/Swallow-7b-instruct-v0.1":
-                return await self.llm.ainvoke(messages, stop=["</s>"], **kwargs)
+                response = await self.llm.ainvoke(messages, stop=["</s>"], **kwargs)
             else:
-                return await self.llm.ainvoke(messages, **kwargs)
+                response = await self.llm.ainvoke(messages, **kwargs)
+        if '</think>' in response.content:
+            response.content = response.content.split('</think>')[-1].lstrip()
+        return response
 
     async def _process_batch(self, batch: Inputs) -> List[Tuple[AIMessage, float]]:
         tasks = [
