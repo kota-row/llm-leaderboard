@@ -1,0 +1,41 @@
+name: Merge Runs
+
+on:
+  schedule:
+    - cron: "0 17 * * *"  # 02:00 JST (UTC+9)
+  workflow_dispatch:
+    inputs:
+      entity:
+        description: "W&B entity"
+        required: false
+        default: "llm-leaderboard"
+      project:
+        description: "W&B project"
+        required: false
+        default: "nejumi-leaderboard4"
+      run_id:
+        description: "Destination W&B run ID (leave blank to create a new run)"
+        required: false
+        default: "s8l0q5rw"
+
+jobs:
+  merge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install wandb pandas
+
+      - name: Run merge_runs.py
+        env:
+          WANDB_API_KEY: ${{ secrets.WANDB_API_KEY }}
+        run: |
+          ENTITY="${{ inputs.entity || 'llm-leaderboard' }}"
+          PROJECT="${{ inputs.project || 'nejumi-leaderboard4' }}"
+          RUN_ID="${{ inputs.run_id || 's8l0q5rw' }}"
+          python scripts/merge_runs.py --entity $ENTITY --project $PROJECT --run-id $RUN_ID
